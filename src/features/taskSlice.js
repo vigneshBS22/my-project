@@ -1,32 +1,33 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 export const taskSlice = createSlice({
-  name: "tasks",
+  name: 'tasks',
   initialState: {
-    tasks: []
+    tasks: [],
+    filters: 'all',
   },
   reducers: {
     addTask: (state, action) => {
       state.tasks.push(action.payload);
-      localStorage.setItem("tasks", JSON.stringify(state));
     },
     changeStatus: (state, action) => {
       const indexfound = state.tasks.findIndex(
         (task1) => task1.id === action.payload.id
       );
-      state.tasks[indexfound].status === false
-        ? (state.tasks[indexfound].status = true)
-        : (state.tasks[indexfound].status = false);
-      localStorage.setItem("tasks", JSON.stringify(state));
+      state.tasks[indexfound].status = !state.tasks[indexfound].status;
     },
     deleteTask: (state, action) => {
       state.tasks = state.tasks.filter((task) => task.id !== action.payload.id);
-      localStorage.setItem("tasks", JSON.stringify(state));
-    }
-  }
+    },
+    changeFilter: (state, action) => {
+      state.filters = action.payload;
+      console.log(action.payload);
+    },
+  },
 });
 
-export const { addTask, changeStatus, deleteTask } = taskSlice.actions;
+export const { addTask, changeStatus, deleteTask, changeFilter } =
+  taskSlice.actions;
 
 export const selectTask = (state) => state.tasks;
 

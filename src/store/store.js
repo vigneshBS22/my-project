@@ -1,18 +1,18 @@
 import { configureStore } from "@reduxjs/toolkit";
 import taskReducer from "../features/taskSlice";
+import {persistStore, persistReducer} from "redux-persist";
+import storage from "redux-persist/lib/storage";
 
-let preloadedState;
-const persistedTodosString = localStorage.getItem("tasks");
 
-if (persistedTodosString) {
-  preloadedState = {
-    tasks: JSON.parse(persistedTodosString)
-  };
-}
+const persistConfig = {
+  key: "root",
+  storage
+};
 
-export const store = configureStore({
-  reducer: {
-    tasks: taskReducer
-  },
-  preloadedState
-});
+const persistedReducer = persistReducer(persistConfig, taskReducer);
+
+let store = configureStore({reducer: { tasks: persistedReducer}})
+let persistor = persistStore(store)
+
+export {store,persistor}
+

@@ -1,12 +1,12 @@
 import './App.css';
-import TaskInput from "./components/taskInput";
-import TaskList from "./components/taskList";
+import TaskInput from './components/taskInput';
+import TaskList from './components/taskList';
 
 function App() {
   return (
-    <div className="min-h-screen bg-black">
-      <div className="text-center text-2xl font-bold text-white">
-        To-do list
+    <div className='min-h-screen bg-red-50'>
+      <div className='text-center text-6xl text-red-200 font-mono pt-8'>
+        Todos
       </div>
       <TaskInput />
       <TaskList />
