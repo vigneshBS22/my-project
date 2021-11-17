@@ -1,18 +1,8 @@
-import { configureStore } from "@reduxjs/toolkit";
-import taskReducer from "../features/taskSlice";
-import {persistStore, persistReducer} from "redux-persist";
-import storage from "redux-persist/lib/storage";
+import { configureStore } from '@reduxjs/toolkit';
+import taskReducer from '../features/taskSlice';
 
-
-const persistConfig = {
-  key: "root",
-  storage
-};
-
-const persistedReducer = persistReducer(persistConfig, taskReducer);
-
-let store = configureStore({reducer: { tasks: persistedReducer}})
-let persistor = persistStore(store)
-
-export {store,persistor}
-
+export const store = configureStore({
+  reducer: {
+    tasks: taskReducer,
+  },
+});

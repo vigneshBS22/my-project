@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addTask, selectTask } from '../features/taskSlice';
+import { collection, addDoc } from '@firebase/firestore';
+import db from '../Firestore/firebase';
 
 const TaskInput = () => {
   const dispatch = useDispatch();
   const tasks = useSelector(selectTask);
+  const tasksCollectionRef = collection(db, 'tasks');
 
   const [key, setKey] = useState(0);
   const [task, setTask] = useState({ id: key, task: '', status: false });
@@ -13,9 +16,14 @@ const TaskInput = () => {
   };
 
   const submitHandler = () => {
+    createTaskFirestore();
     dispatch(addTask({ ...task, id: tasks.tasks.length }));
     setTask({ id: tasks.tasks.length + 1, task: '', status: false });
     setKey((key) => tasks.tasks.length + 1);
+  };
+
+  const createTaskFirestore = async () => {
+    await addDoc(tasksCollectionRef, { task: task.task, status: task.status });
   };
 
   return (

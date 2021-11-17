@@ -7,6 +7,10 @@ export const taskSlice = createSlice({
     filters: 'all',
   },
   reducers: {
+    setTasks: (state, action) => {
+      console.log(action.payload);
+      state.tasks = action.payload;
+    },
     addTask: (state, action) => {
       state.tasks.push(action.payload);
     },
@@ -21,12 +25,11 @@ export const taskSlice = createSlice({
     },
     changeFilter: (state, action) => {
       state.filters = action.payload;
-      console.log(action.payload);
     },
   },
 });
 
-export const { addTask, changeStatus, deleteTask, changeFilter } =
+export const { addTask, changeStatus, deleteTask, changeFilter, setTasks } =
   taskSlice.actions;
 
 export const selectTask = (state) => state.tasks;

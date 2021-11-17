@@ -1,22 +1,46 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   selectTask,
   changeStatus,
   deleteTask,
   changeFilter,
+  setTasks,
 } from '../features/taskSlice';
 import { TiDeleteOutline } from 'react-icons/ti';
+import { collection, getDocs } from '@firebase/firestore';
+import db from '../Firestore/firebase';
+import {
+  updateStatusFirestore,
+  deleteTaskFirestore,
+} from '../Firestore/firebaseFunctions';
 
 const TaskList = () => {
   const tasks = useSelector(selectTask);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch([]);
+
+  const [fetchTasks, setFetchTasks] = useState([]);
+  const tasksCollectionRef = collection(db, 'tasks');
+
+  useEffect(() => {
+    //to fetch tasks from firebase
+    const getTasks = async () => {
+      const data = await getDocs(tasksCollectionRef);
+      setFetchTasks(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    };
+    getTasks();
+  }, []);
+
+  useEffect(() => {
+    //to set tasks in redux
+    dispatch(setTasks(fetchTasks));
+  }, [fetchTasks]);
 
   const statusHandler = (task) => {
+    updateStatusFirestore(task.id, task.status);
     dispatch(changeStatus(task));
   };
 
-  // console.log(tasks);
   let tasksToDisplay;
   switch (tasks.filters) {
     case 'completed':
@@ -28,6 +52,7 @@ const TaskList = () => {
     default:
       tasksToDisplay = tasks.tasks;
   }
+
   return (
     <div className='w-9/12 mx-auto'>
       {tasksToDisplay.length === 0 && (
@@ -64,6 +89,7 @@ const TaskList = () => {
               <div
                 className='mt-2 text-black text-2xl cursor-pointer hover:text-red-400'
                 onClick={() => {
+                  deleteTaskFirestore(task.id);
                   dispatch(deleteTask(task));
                 }}
               >
