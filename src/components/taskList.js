@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   selectTask,
   changeStatus,
   deleteTask,
   changeFilter,
-  setTasks,
+  getTasksAsync,
 } from '../features/taskSlice';
 import { TiDeleteOutline } from 'react-icons/ti';
-import { collection, getDocs } from '@firebase/firestore';
+import { collection } from '@firebase/firestore';
 import db from '../Firestore/firebase';
 import {
   updateStatusFirestore,
@@ -19,22 +19,12 @@ const TaskList = () => {
   const tasks = useSelector(selectTask);
   const dispatch = useDispatch([]);
 
-  const [fetchTasks, setFetchTasks] = useState([]);
   const tasksCollectionRef = collection(db, 'tasks');
 
   useEffect(() => {
-    //to fetch tasks from firebase
-    const getTasks = async () => {
-      const data = await getDocs(tasksCollectionRef);
-      setFetchTasks(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-    };
-    getTasks();
-  }, []);
-
-  useEffect(() => {
     //to set tasks in redux
-    dispatch(setTasks(fetchTasks));
-  }, [fetchTasks]);
+    dispatch(getTasksAsync(tasksCollectionRef));
+  }, []);
 
   const statusHandler = (task) => {
     updateStatusFirestore(task.id, task.status);

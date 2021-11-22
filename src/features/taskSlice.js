@@ -1,4 +1,14 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { getDocs } from '@firebase/firestore';
+
+export const getTasksAsync = createAsyncThunk(
+  'tasks/getTasks',
+  async (tasksCollectionRef) => {
+    const data = await getDocs(tasksCollectionRef);
+    let tasks = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    return tasks;
+  }
+);
 
 export const taskSlice = createSlice({
   name: 'tasks',
@@ -7,9 +17,6 @@ export const taskSlice = createSlice({
     filters: 'all',
   },
   reducers: {
-    setTasks: (state, action) => {
-      state.tasks = action.payload;
-    },
     addTask: (state, action) => {
       state.tasks.push(action.payload);
     },
@@ -24,6 +31,11 @@ export const taskSlice = createSlice({
     },
     changeFilter: (state, action) => {
       state.filters = action.payload;
+    },
+  },
+  extraReducers: {
+    [getTasksAsync.fulfilled]: (state, action) => {
+      state.tasks = action.payload;
     },
   },
 });
